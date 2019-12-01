@@ -1,0 +1,10 @@
+{% extends 'bform/base.html' %}
+
+{% block content %}
+    <h2>Hello Visitor</h2>
+    <h4>enter your mobile number to checkout</h4>
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+{% endblock %}
