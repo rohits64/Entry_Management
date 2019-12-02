@@ -25,3 +25,16 @@ EMAIL_HOST_PASSWORD = 'passwordofgmailaccount'
 $python manage.py runserver
 ```
 Open http://127.0.0.1:8000/host/new/ and test it.
+
+### Screenshot of this app
+- Email to host for member arrived 
+![GitHub Logo](/images/host.png)
+- SMS to host for member arrived 
+![GitHub Logo](/images/sms.jpg)
+- Email to visitor 
+![GitHub Logo](/images/visi.png)
+-Screenshot of forms
+![GitHub Logo](/images/s1.png)
+![GitHub Logo](/images/s2.png)
+![GitHub Logo](/images/s3.png)
+![GitHub Logo](/images/s4.png)
