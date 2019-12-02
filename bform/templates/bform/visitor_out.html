@@ -2,9 +2,10 @@
 
 {% block content %}
     <h2>Hello Visitor</h2>
-    <h4>enter your mobile number to checkout</h4>
+    <h5>Enter your mobile number to checkout</h5>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Save</button>
+        <button type="submit" class="save btn btn-default">CHECKOUT</button>
     </form>
+    <h5>Thank you for visiting us.</h5>
 {% endblock %}

@@ -2,11 +2,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import HostsForm,VisitorsForm,VisitorsOutForm
 import json
+import requests
 from json import loads
 from django.utils import timezone
 from .models import Hosts,Visitors
 from django.core.mail import send_mail
 from django.conf import settings
+from django.shortcuts import redirect
+from django.shortcuts import render_to_response
 
 # Create your views here.
 def index(request):
@@ -18,6 +21,9 @@ def host_new(request):
         if form.is_valid():
             host = form.save(commit=False)
             host.save()
+            return render_to_response('bform/return_s.html')
+        else:
+            return render_to_response('bform/return_u.html')
     else:
         form=HostsForm()
     return render(request,'bform/host_edit.html',{'form':form})
@@ -35,20 +41,24 @@ def visitor_new(request):
             email_from=settings.EMAIL_HOST_USER
             recipient_list= [r_host.email,]
             send_mail( subject, message, email_from, recipient_list )
+            url = "https://www.fast2sms.com/dev/bulk"
+            payload = "sender_id=FSTSMS&message="+message+"&language=english&route=p&numbers="+str(r_host.phone)
+            headers = {
+                'authorization': "yourFAST2SMSAPI",
+                'Content-Type': "application/x-www-form-urlencoded",
+                'Cache-Control': "no-cache",
+            }
+            response = requests.request("POST", url, data=payload, headers=headers)
+            return render_to_response('bform/return_s.html')
+        else:
+            return render_to_response('bform/return_u.html')
+
     else:
         form=VisitorsForm()
     return render(request,'bform/visitor_edit.html',{'form':form})
 
 def visitor_out(request):
     if request.method == "POST":
-        # body_unicode=request.body.decode('utf-8')
-        # a=json.loads(body_unicode)
-        # a=str(request.body,'utf-8')
-        # b=a.split("&")
-        # a=b[1]
-        # b=a.split("=")
-        # a=b[1]
-        # b=int(a)
         Visitors.objects.filter(phone=request.POST['phone']).update(check_out_v=timezone.now())
         n_visitor=Visitors.objects.get(phone=request.POST['phone'])
         r_host = Hosts.objects.get(id=n_visitor.name_of_host_id_id)
@@ -58,9 +68,7 @@ def visitor_out(request):
         recipient_list = [n_visitor.email,]
         send_mail(subject,message,email_from,recipient_list)
         form=VisitorsOutForm()
-        # return HttpResponse(b)
-        # form=VisitorsOutForm(request.POST)
-
+        return render_to_response('bform/return_s.html')
     else:
         form=VisitorsOutForm()
     return render(request,'bform/visitor_out.html',{'form':form})
