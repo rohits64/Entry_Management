@@ -10,6 +10,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
+from django.utils.timezone import activate
+activate(settings.TIME_ZONE)
 
 # Create your views here.
 def index(request):
@@ -29,6 +31,7 @@ def host_new(request):
     return render(request,'bform/host_edit.html',{'form':form})
 
 def visitor_new(request):
+    # activate(settings.TIME_ZONE)
     if request.method == "POST":
         form=VisitorsForm(request.POST)
         if form.is_valid():
@@ -40,7 +43,8 @@ def visitor_new(request):
             message = 'This person arrived at meeting\nName:'+request.POST['name']+'\nEmail:'+request.POST['email']+'\nPhone:'+request.POST['phone']+'\nCheckin Time:'+str(timezone.now())
             email_from=settings.EMAIL_HOST_USER
             recipient_list= [r_host.email,]
-            send_mail( subject, message, email_from, recipient_list )
+            if email_from != 'your@gmail.com' :
+                send_mail( subject, message, email_from, recipient_list )
             url = "https://www.fast2sms.com/dev/bulk"
             payload = "sender_id=FSTSMS&message="+message+"&language=english&route=p&numbers="+str(r_host.phone)
             headers = {
@@ -48,7 +52,8 @@ def visitor_new(request):
                 'Content-Type': "application/x-www-form-urlencoded",
                 'Cache-Control': "no-cache",
             }
-            response = requests.request("POST", url, data=payload, headers=headers)
+            if(headers['authorization']!= "yourFAST2SMSAPI"):
+                response = requests.request("POST", url, data=payload, headers=headers)
             return render_to_response('bform/return_s.html')
         else:
             return render_to_response('bform/return_u.html')
@@ -66,7 +71,8 @@ def visitor_out(request):
         message='Name:'+n_visitor.name+'\nPhone:'+str(n_visitor.phone)+'\nCheck-in time:'+str(n_visitor.check_in)+'\nCheck-out time:'+str(n_visitor.check_out_v)+'\nHost name:'+r_host.name
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [n_visitor.email,]
-        send_mail(subject,message,email_from,recipient_list)
+        if email_from != 'your@gmail.com' :
+                send_mail( subject, message, email_from, recipient_list )
         form=VisitorsOutForm()
         return render_to_response('bform/return_s.html')
     else:
