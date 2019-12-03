@@ -1,5 +1,13 @@
 # Entry_Management
 
+## Tools used
+- Django
+- HTML/CSS
+- SQLite
+- FAST2SMS
+- SMTP
+
+
 ## How to use it
 Install python 3.x from https://www.python.org/downloads/ to your computer if it not there.
 
